@@ -1,9 +1,10 @@
 package com.btw.foodiemap.domain;
 
 import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.GeoResults;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.repository.MongoRepository;
+
+import java.util.List;
 
 /**
  * Created by gplzh on 2016/6/2.
@@ -11,5 +12,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface FoodRepository extends MongoRepository<Food, String> {
 
-    GeoResults<Food> findByLocationNear(Point point, Distance maxDistance);
+    List<Food> findByLocationNear(Point point, Distance maxDistance);
 }

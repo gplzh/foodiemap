@@ -6,13 +6,15 @@ import com.btw.response.ResponseEntity;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 /**
  * Created by gplzh on 2016/6/2.
@@ -23,25 +25,27 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class GeoController {
 
     @Autowired
-    private FoodService foodServiceImpl;
+    private FoodService foodService;
 
     @RequestMapping(value = "/addPosition", method = RequestMethod.GET)
     @ApiOperation(httpMethod = "GET", value = "测试", response = ResponseEntity.class)
     @ResponseBody
     public ResponseEntity addPosition(@RequestParam double x, @RequestParam double y) {
-        Food food = new Food("好吃的", new GeoJsonPoint(x, y));
-        foodServiceImpl.save(food);
+        Food food = new Food("好吃的", new Point(x, y));
+        foodService.save(food);
 
         return new ResponseEntity();
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    @ApiOperation(httpMethod = "GET", value = "测试", response = ResponseEntity.class)
+    @ApiOperation(httpMethod = "GET", value = "测试", response = SearchResponse.class)
     @ResponseBody
-    public ResponseEntity search(@RequestParam double x, @RequestParam double y, @RequestParam double distance) {
-        ResponseEntity response = new ResponseEntity();
-        response.setResult(foodServiceImpl.findByLocationNear(new Point(x, y), new Distance(distance)));
+    public SearchResponse search(@RequestParam double x, @RequestParam double y, @RequestParam double distance) {
+        SearchResponse response = new SearchResponse();
+        response.setResult(foodService.findByLocationNear(new Point(x, y), new Distance(distance, Metrics.MILES)));
         return response;
     }
+
+    class SearchResponse extends ResponseEntity<List<Food>>{}
 
 }
