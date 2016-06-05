@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
+import org.springframework.data.geo.Polygon;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -37,15 +38,23 @@ public class GeoController {
         return new ResponseEntity();
     }
 
-    @RequestMapping(value = "/search", method = RequestMethod.GET)
-    @ApiOperation(httpMethod = "GET", value = "测试", response = SearchResponse.class)
+    @RequestMapping(value = "/searchLocationNear", method = RequestMethod.GET)
+    @ApiOperation(httpMethod = "GET", value = "测试", response = ResponseEntity.class)
     @ResponseBody
-    public SearchResponse search(@RequestParam double x, @RequestParam double y, @RequestParam double distance) {
-        SearchResponse response = new SearchResponse();
+    public ResponseEntity searchLocationNear(@RequestParam double x, @RequestParam double y, @RequestParam double distance) {
+        ResponseEntity response = new ResponseEntity();
         response.setResult(foodService.findByLocationNear(new Point(x, y), new Distance(distance, Metrics.MILES)));
         return response;
     }
 
-    class SearchResponse extends ResponseEntity<List<Food>>{}
+    @RequestMapping(value = "/searchLocationWithin", method = RequestMethod.GET)
+    @ApiOperation(httpMethod = "GET", value = "测试", response = ResponseEntity.class)
+    @ResponseBody
+    public ResponseEntity searchLocationWithin() {
+        ResponseEntity response = new ResponseEntity();
+        Polygon polygon = new Polygon(new Point(9, 11), new Point(11, 11), new Point(11, 9), new Point(9, 9));
+        response.setResult(foodService.findByLocationWithin(polygon));
+        return response;
+    }
 
 }
